@@ -1,5 +1,7 @@
 # More than a Hack 2027 - Phase 1 (ball possession): solution
 
+Start with docs/GUIDE.md for a full walkthrough (flow, approach, why, architecture).
+
 Label every tactical-video frame H / A / D / X. Algorithmic, CPU-only, no hand labels, no training on the public
 5 minutes. Deterministic: the same data gives byte-identical output (verified from a cleared cache).
 
