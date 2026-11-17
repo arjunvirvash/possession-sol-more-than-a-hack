@@ -24,6 +24,21 @@ def load():
     return out
 
 
+def pre_kickoff_mask(n):
+    """[n] bool: graded-half frames before that half's kickoff restart. The restart is the 'Kick Off (Start)' set-piece
+    tag of the half plus the measured restart offset (RESTART_AFTER); nothing here is tied to specific frame numbers."""
+    m = np.zeros(n, bool)
+    starts = {t["tags"].get("Half"): t["s"] for t in load()
+              if t["code"] == "SET PIECES" and t["tags"].get("Type") == "Kick Off (Start)"}
+    for half, a, b in games.half_video_blocks(games.GAME):
+        name = {1: "1st Half", 2: "2nd Half"}.get(half)
+        if name in starts:
+            restart = int(round(starts[name] * FPS)) + int(round(RESTART_AFTER["Kick Off (Start)"] * FPS))
+            if restart > a:
+                m[a:min(restart, b + 1)] = True
+    return m
+
+
 def evidence(n):
     """returns (dead_prior [n] in {0,1} (set-piece window s..restart), team_logit [n] (+ => home), restart_frames)."""
     dead = np.zeros(n, np.float32)

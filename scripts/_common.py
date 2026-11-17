@@ -9,7 +9,7 @@ import pandas as pd
 ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 sys.path.insert(0, os.path.join(ROOT, "src"))
 sys.path.insert(0, os.path.join(ROOT, "..", "more-than-a-hack-2027-main", "starter"))
-from mtah import io  # noqa: E402
+from mtah import io, games  # noqa: E402
 try:
     import load_smart_tagging as LST  # noqa: E402
 except Exception:  # only the analysis scripts need it
@@ -17,8 +17,7 @@ except Exception:  # only the analysis scripts need it
 
 FPS = 25
 PL, PW = 105.3, 68.0
-HALVES = {1: (11185, 90651), 2: (110808, 190197)}      # graded video-frame spans (inclusive)
-KICKOFF2 = 113742                                        # published 2nd-half kickoff (dead until here)
+HALVES = {h: (a, b) for h, a, b in games.half_video_blocks(games.GAME)}   # graded video-frame spans (inclusive)
 CACHE = os.path.join(ROOT, "cache")
 
 # Smart Tagging team strings -> tracking team index (0 = home = Barcelona per DATA.md; verified in

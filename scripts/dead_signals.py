@@ -5,7 +5,7 @@ What it is
 A per-frame probability P(ball dead / out of play) in [0, 1], float32, one value per VIDEO frame
 (row i = video frame i, 199,319 values).  Values are meaningful on the graded frames
 (11185-90651, 110808-190197); outside them they are computed the same way but should be ignored,
-except that frames 110808-113741 (2nd-half pre-kickoff, published in the task docs as dead) are set to 1.
+except that pre-kickoff frames (derived from the Smart Tagging kickoff tag) are set to 1.
 
 No ground truth, no hand labels and no Smart Tagging are used.  It is a 2-state, unsupervised
 (EM-fitted) hidden Markov model over 0.2 s blocks; the 'dead' state is the one with the lower collective
@@ -24,6 +24,7 @@ automatic, label-free references (set-piece tag restart windows; ball-at-feet pr
 """
 import sys
 from _common import *
+from mtah import tags as mtags
 
 BLOCK = 5            # frames per HMM step (0.2 s)
 EPS = 1e-3
@@ -154,7 +155,7 @@ def dead_probability(d, params=None, verbose=False):
     pb = np.full(n, np.nan, np.float32)
     pb[:nb * BLOCK] = np.repeat(g[:, 0], BLOCK).astype(np.float32)
     pb[nb * BLOCK:] = pb[nb * BLOCK - 1]
-    pb[110808:KICKOFF2] = 1.0                              # published: 2nd-half frames before kickoff are dead
+    pb[mtags.pre_kickoff_mask(n)] = 1.0                    # frames before a half's kickoff restart are dead
     return pb, (P, A, pi)
 
 
@@ -267,5 +268,5 @@ if __name__ == "__main__":
         print("    stretch START - tag start (s): median %.1f IQR [%.1f, %.1f]" % (np.median(relstart), *np.percentile(relstart, [25, 75])))
     for h, (a, b) in HALVES.items():
         print("  half %d: flagged %.1f%% of graded frames" % (h, 100 * flag[a:b + 1].mean()))
-    print("  excluding the 2nd-half pre-kickoff block (110808-113741): flagged %.1f%% of the remaining graded frames" % (
-        100 * flag[gm & ~((np.arange(n) >= 110808) & (np.arange(n) < KICKOFF2))].mean()))
+    print("  excluding the pre-kickoff block: flagged %.1f%% of the remaining graded frames" % (
+        100 * flag[gm & ~mtags.pre_kickoff_mask(n)].mean()))

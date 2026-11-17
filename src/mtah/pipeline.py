@@ -30,9 +30,9 @@ def run(params=None, dead_signal=None, return_parts=False):
     emis[:, 1] = -emis[:, 0]
     emis[:, 2] = dead_logit * 0.5
     emis[:, 0] += 0.0
-    prot = np.zeros(N, bool); prot[110808:113742] = True
+    prot = tags.pre_kickoff_mask(N)
     path = decode.decode(emis, blocks(), P["p_switch"], P["p_dead"], N, P["min_dead"], prot)
-    # second half: frames before the published kickoff are all dead
-    path[110808:113742] = decode.D
+    # frames before a half's kickoff restart are dead (derived from the Smart Tagging kickoff tag, see tags.py)
+    path[prot] = decode.D
     labels = LET[path]
     return (labels, emis, path) if return_parts else labels

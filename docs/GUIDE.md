@@ -1,7 +1,7 @@
 # GUIDE: how this solution works, how we got here, and why
 
 This is the "teach me everything" document. `README.md` is the quick start, `TECHNICAL.md` is the short
-write-up for the organisers, `docs/PLAN.md` is the plan we approved, `docs/notes/` holds the two research notes.
+write-up for the organisers, `docs/notes/` holds the two research notes.
 Read this one if you want to understand, defend or extend the solution.
 
 ---
@@ -38,7 +38,7 @@ Key facts we measured (all label-free):
 - During those gaps mean player speed is about 1.2 m/s versus 2.2 m/s in play. So **a missing ball is mostly a
   stoppage** (the tracker basically only sees the ball when it moves).
 - Frame alignment: ATD row i is video frame i (`frame_id = video_frame + 1`; we load it so row index = video frame).
-- Graded frames: 11185 to 90651 and 110808 to 190197. Second-half frames 110808 to 113741 are all dead (published).
+- Graded frames: 11185 to 90651 and 110808 to 190197. Second-half frames before the kickoff restart are dead; the span is derived from the Smart Tagging kickoff tag, not hard-coded.
 
 ---
 
@@ -96,7 +96,7 @@ Built by a helper agent, and worth understanding:
 - We deliberately did **not** feed it "ball unseen": EM just clusters on that and learns nothing about dead
   balls (the ball is unseen about 40% of the time, much of it live play).
 - Learned transitions give sticky states (mean stay about 17 s dead, about 19 s live), so blips are smoothed.
-- Output: P(dead) per frame, used as a log-odds term. Frames 110808 to 113741 are forced to 1.
+- Output: P(dead) per frame, used as a log-odds term. Pre-kickoff frames (from the Smart Tagging kickoff tag) are forced to 1.
 - Caveat (important): it is a **calm-state** detector. It finds when everybody slows down, so it is good at the
   end of a stoppage (restart localised to about +0.4 s) and poor at the start.
 
@@ -132,7 +132,7 @@ Then the **minimum-stoppage rule**: any D run shorter than **100 frames (4 s)** 
 re-decoded (up to 4 passes). Reason: a real stoppage lasts longer, and short "calm" dips are slow live play. This
 fixed a visible failure (spurious short D inside possessions) and raised macroF1 0.70 → 0.78.
 
-Finally, frames 110808 to 113741 are set to D, and everything outside the graded halves is `X`.
+Finally, pre-kickoff frames are set to D, and everything outside the graded halves is `X`.
 
 Why this beats the baseline structurally: the cost of switching makes the output a **small number of long, stable
 segments**, exactly what spellF1 rewards, while the control weight stops passes from creating false switches.
@@ -224,7 +224,6 @@ src/mtah/features.py   ball speed, kernel evidence       src/mtah/pipeline.py  c
 src/mtah/tags.py       Smart Tagging evidence            src/mtah/align.py     broadcast alignment (unused in final)
 scripts/run_all.py     one-command rebuild → submission/<team>.csv
 scripts/dead_signals.py   dead-ball HMM (also run by run_all if cache missing)
-scripts/make_csv.py    ad-hoc variants:  python scripts/make_csv.py name '{"p_switch":60}'
 evaluation/            vendored official scorer + public GT   baselines/   the four published baselines
 submission/possession_final.csv   the current submission     docs/notes/   research notes from the two agents
 ```

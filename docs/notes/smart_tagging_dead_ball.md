@@ -82,7 +82,7 @@ Raw signals on graded frames (106 min):
 
 Detector: unsupervised 2-state HMM (EM) on 0.2 s blocks with emissions log player speed, log ball speed (when seen),
 ball-outside-pitch flag; learned transitions (mean stay dead 17 s, live 19 s). Ball visibility as an emission was
-rejected: EM then simply clusters "ball unseen" (14% vs 99.9% seen). 2nd-half frames 110808-113741 are forced to 1.
+rejected: EM then simply clusters "ball unseen" (14% vs 99.9% seen). 2nd-half pre-kickoff frames (derived from the kickoff tag) are forced to 1.
 - Flags (P>0.5): 48.1% of graded frames = 50.9 min dead, 55 min live (football prior: ~55-60 effective of ~95-106).
   Half 1 47.0%, half 2 49.2% (47.1% without the pre-kickoff block).
 - 169 stretches; length median 7.6 s, IQR [3.0, 21.6] s, p90 40 s, max 216 s; by stretch count 38% are <5 s,

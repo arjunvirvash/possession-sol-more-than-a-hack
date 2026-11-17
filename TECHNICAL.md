@@ -22,7 +22,7 @@ set-piece timing offsets were measured against label-free proxies from the track
 - A change needs sustained proximity of the opposing team to a slow ball (switch cost 30 nats ~ several seconds
   of clear evidence); deflections and fleeting contests do not flip.
 - Dead ball: calm-state HMM probability + set-piece windows + ball-unseen; D runs < 4 s are re-decoded as live.
-- Frames 110808-113741 (pre-kickoff, published as dead) are D. Halftime/outside = X (ungraded).
+- Frames before a half's kickoff restart are D. The span is derived from the Smart Tagging "Kick Off (Start)" tag plus the measured restart offset (`tags.pre_kickoff_mask`), not hard-coded frame numbers. Halftime/outside = X (ungraded).
 
 ## Limitations
 Ball missing in long gaps: the team is carried over from the previous possession (7.6% of alive frames). The
